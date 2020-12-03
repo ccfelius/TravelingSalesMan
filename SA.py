@@ -5,8 +5,8 @@ import math
 import numpy as np
 
 # read data from file
-# f = open("TSP-configurations/eil51.tsp.txt", "r")
-f = open("TSP-configurations/a280.tsp.txt", "r")
+f = open("TSP-configurations/eil51.tsp.txt", "r")
+# f = open("TSP-configurations/a280.tsp.txt", "r")
 # f = open("TSP-configurations/pcb442.tsp.txt", "r")
 
 network = f.readlines()[6:-1]
@@ -19,13 +19,16 @@ for node in network:
     node = list(map(int, (list(filter(None, node.rstrip().rsplit(' '))))))
     nodes[node[0]] = node[1:]
 
-
 # calculate distance between 2 nodes
-def get_distance(dictionary, city1, city2):
+def initial_distance(dictionary, city1, city2):
     x = dictionary[city1][0] - dictionary[city2][0]
     y = dictionary[city1][1] - dictionary[city2][1]
     return math.sqrt(x**2 + y**2)
 
+def get_distance(dictionary, city1, city2):
+    x = dictionary[city1][0][0] - dictionary[city2][0][0]
+    y = dictionary[city1][0][1] - dictionary[city2][0][1]
+    return math.sqrt(x**2 + y**2)
 
 # calculate the total distance
 def total_distance(tour, dictionary):
@@ -35,6 +38,21 @@ def total_distance(tour, dictionary):
         distance += get_distance(dictionary, tour[i], tour[i+1])
 
     return distance
+
+
+# add nearest neighbors in order of nearest to most far
+for node in range(1,len(nodes)+1):
+    t_dict = dict()
+    tour = [i for i in nodes.keys()]
+    tour.remove(node)
+
+    for j in tour:
+        t_dict[j] = initial_distance(nodes, node, j)
+
+    nodes[node].append(sorted(t_dict.items(), key=lambda x: x[1]))
+
+print(nodes)
+
 
 
 def SA(coordinates, tour, temp, coolingdown, mlength, start_node=True):
@@ -52,7 +70,7 @@ def SA(coordinates, tour, temp, coolingdown, mlength, start_node=True):
     # Initial costs
     costs = total_distance(tour, coordinates)
 
-    for i in range(2000): # Parameter
+    for i in range(1000): # Parameter
         print(i, 'cost=', costs)
 
         temp = coolingdown(temp)
@@ -87,6 +105,8 @@ def SA(coordinates, tour, temp, coolingdown, mlength, start_node=True):
 
     return tour, costs, temp
 
+def candidate_solution():
+    return
 
 def cooling(temp):
     """
@@ -97,9 +117,9 @@ def cooling(temp):
     """
     return temp - np.log(temp)
 
-Temperature = 4000 # Parameter
+Temperature = 1000 # Parameter
 MCL = 500 # Markov Chain Length (inner loop)
 # Get node names
 initial_tour = [i for i in nodes.keys()]
 
-print(SA(nodes, initial_tour, Temperature, cooling, MCL))
+# print(SA(nodes, initial_tour, Temperature, cooling, MCL))
