@@ -1,4 +1,4 @@
-""" TSP PROBLEM, OBJECT ORIENTED GRAPH """
+""" TSP SIMULATED ANNEALING """
 
 # Imports
 import numpy as np
