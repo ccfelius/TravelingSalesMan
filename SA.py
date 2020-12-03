@@ -34,7 +34,7 @@ def total_distance(tour, dictionary):
     return distance
 
 
-def SA(coordinates, tour, temp, factor, mlength, start_node=True):
+def SA(coordinates, tour, temp, coolingdown, mlength, start_node=True):
 
     if start_node == True:
         a, c = [tour[0]], [tour[0]]
@@ -52,7 +52,11 @@ def SA(coordinates, tour, temp, factor, mlength, start_node=True):
     for i in range(1000): # Parameter
         print(i, 'cost=', costs)
 
-        temp = temp*factor
+        temp = coolingdown(temp)
+        if temp == 0:
+            print("Temperature of 0 reached")
+            return tour, costs
+
         for j in range(mlength): # Parameter
 
             # Exchange two coordinates and get a candidate solution solution
@@ -64,27 +68,35 @@ def SA(coordinates, tour, temp, factor, mlength, start_node=True):
             # get the new costs
             cost_n = total_distance(tour, coordinates)
 
+            # replace old costs if new costs is less
             if cost_n < costs:
                 costs = cost_n
             else:
-                # generate random probability
+                # Generate random probability
                 x = np.random.uniform()
 
-                # if prob < formula
-                if x < math.exp((costs-cost_n)/temp):
+                # If prob < formula accept candidate solution
+                if x < min(1, math.exp(-(cost_n-costs)/temp)):
                     costs = cost_n
                 else:
-                    # Swap coordinates
+                    # Swap back to prior solution
                     tour[c1], tour[c2] = tour[c2], tour[c1]
 
-    return tour, costs
+    return tour, costs, temp
 
+
+def cooling(temp):
+    """
+    Cooling down function
+
+    :param temp: (float) temperature
+    :return: (float) new temperature
+    """
+    return temp - np.log(temp)
 
 Temperature = 1000 # Parameter
-factor = 0.99 # Parameter
 MCL = 500 # Markov Chain Length (inner loop)
-
 # Get node names
 initial_tour = [i for i in nodes.keys()]
 
-print(SA(nodes, initial_tour, Temperature, factor, MCL))
+print(SA(nodes, initial_tour, Temperature, cooling, MCL))
