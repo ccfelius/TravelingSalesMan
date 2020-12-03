@@ -49,15 +49,16 @@ for node in range(1, len(nodes) + 1):
     tour_.remove(node)
 
     for j in tour_:
-        t_dict[j] = get_distance(nodes, node, j)
+        # because we want to keep 1 here
+        if j != 1:
+            t_dict[j] = get_distance(nodes, node, j)
 
     nodes[node].append(sorted(t_dict.items(), key=lambda x: x[1]))
 
-print(nodes[1][2][0][0])
 
+def SA(coordinates, tour, temp, coolingdown, outer, mlength, knn, start_end=True):
 
-def SA(coordinates, tour, temp, coolingdown, mlength, knn, start_node=True):
-    if start_node == True:
+    if start_end == True:
         a, c = [tour[0]], [tour[0]]
         b = tour[1:]
         np.random.shuffle(b)
@@ -70,7 +71,7 @@ def SA(coordinates, tour, temp, coolingdown, mlength, knn, start_node=True):
     # Initial costs
     costs = total_distance(tour, coordinates)
 
-    for i in range(1000):  # Parameter
+    for i in range(outer):  # Parameter
         print(i, 'cost=', costs)
 
         temp = coolingdown(temp)
@@ -78,11 +79,16 @@ def SA(coordinates, tour, temp, coolingdown, mlength, knn, start_node=True):
             print("Temperature of 0 reached")
             return tour, costs
 
+        knn = max(knn, round(i/outer * (len(tour)-3)))
+        # print(f'new knn {knn}')
+
         for j in range(mlength):  # Parameter
 
             # Exchange two coordinates and get a candidate solution
-            c1 = np.random.randint(1, len(tour) - 1)
-            c2 = coordinates[c1][2][np.random.randint(knn)][0]
+            c1 = np.random.randint(1, len(tour) - 2)
+
+            # get 1 of the nearest neighbors, which increase as the iterations decrease
+            c2 = coordinates[c1][2][np.random.randint(1, knn)][0]
 
             # Swap coordinates
             tour[c1], tour[c2] = tour[c2], tour[c1]
@@ -122,9 +128,10 @@ def cooling(temp):
 
 
 Temperature = 1000  # Parameter
-MCL = 500  # Markov Chain Length (inner loop)
+outer = 1000
+MCL = 1000  # Markov Chain Length (inner loop)
 # Get node names
 initial_tour = [i for i in nodes.keys()]
 # print(initial_tour)
 #
-print(SA(nodes, initial_tour, Temperature, cooling, MCL, 10))
+print(SA(nodes, initial_tour, Temperature, cooling, outer, MCL, 2))
