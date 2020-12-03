@@ -5,7 +5,10 @@ import math
 import numpy as np
 
 # read data from file
-f = open("TSP-configurations/eil51.tsp.txt", "r")
+# f = open("TSP-configurations/eil51.tsp.txt", "r")
+f = open("TSP-configurations/a280.tsp.txt", "r")
+# f = open("TSP-configurations/pcb442.tsp.txt", "r")
+
 network = f.readlines()[6:-1]
 
 # create dictionary to store coordinates
@@ -13,7 +16,7 @@ nodes = dict()
 
 # split data and put in dict
 for node in network:
-    node = [int(x) for x in node.rstrip().split(' ')]
+    node = list(map(int, (list(filter(None, node.rstrip().rsplit(' '))))))
     nodes[node[0]] = node[1:]
 
 
@@ -49,7 +52,7 @@ def SA(coordinates, tour, temp, coolingdown, mlength, start_node=True):
     # Initial costs
     costs = total_distance(tour, coordinates)
 
-    for i in range(1000): # Parameter
+    for i in range(2000): # Parameter
         print(i, 'cost=', costs)
 
         temp = coolingdown(temp)
@@ -94,7 +97,7 @@ def cooling(temp):
     """
     return temp - np.log(temp)
 
-Temperature = 1000 # Parameter
+Temperature = 4000 # Parameter
 MCL = 500 # Markov Chain Length (inner loop)
 # Get node names
 initial_tour = [i for i in nodes.keys()]
