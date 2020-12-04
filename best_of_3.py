@@ -1,4 +1,5 @@
 """ TSP SIMULATED ANNEALING """
+""" Hybrid Sampling and L&M Cooling Scheme"""
 
 # Imports
 import math
@@ -8,6 +9,8 @@ import pandas as pd
 from TravelingSalesMan.cooling_methods import *
 
 # read data from file
+# uncomment the file you'd like to work with
+
 f = open("TSP-configurations/eil51.tsp.txt", "r")
 # f = open("TSP-configurations/a280.tsp.txt", "r")
 # f = open("TSP-configurations/pcb442.tsp.txt", "r")
@@ -37,9 +40,13 @@ for node in range(1, len(nodes) + 1):
 print(nodes)
 
 
-def SA(coordinates, tour, temp, coolingdown, outer, mlength, method="bo3", start_node=True):
+def SA(coordinates, tour, Tmax, Tmin, coolingdown, outer, mlength, start_end=True):
 
-    if start_node == True:
+    # initial temp is Tmax
+    temp = Tmax
+
+    # set begin and end node (city)
+    if start_end == True:
         a, c = [tour[0]], [tour[0]]
         b = tour[1:]
         np.random.shuffle(b)
@@ -58,10 +65,10 @@ def SA(coordinates, tour, temp, coolingdown, outer, mlength, method="bo3", start
 
         print(i, 'cost=', costs)
 
-        temp = coolingdown(i, outer, temp)
-        if temp == 0:
-            print("Temperature of 0 reached")
-            return tour, costs
+        # if temp <= Tmin:
+        #     print("Minimum temperature reached")
+        #     return tour, costs
+        temp = coolingdown(Tmax, Tmin, i, temp)
 
         for j in range(mlength):  # Parameter
 
@@ -117,7 +124,8 @@ def SA(coordinates, tour, temp, coolingdown, outer, mlength, method="bo3", start
                 # Generate random probability
                 x = np.random.uniform()
                 # If prob < formula accept candidate solution
-                if x < min(1, math.exp(-(cost_n - costs) / temp)):
+                p0 = math.exp(-(cost_n - costs) / temp)
+                if x < min(1, p0):
                     costs = cost_n
                     if cost_ind == 0:
                         tour = stour
@@ -133,17 +141,25 @@ def SA(coordinates, tour, temp, coolingdown, outer, mlength, method="bo3", start
     return shortest_route, total_costs, temp
 
 
-Temperature = 500  # Parameter
+# Most optimal parameters found so far for eil51.tsp
+Tmax = 400  # Parameter
+Tmin = 5
+outer = 500
 MCL = 1000  # Markov Chain Length (inner loop)
-outer = 250
+
 # Get node names
 initial_tour = [i for i in nodes.keys()]
+# print(initial_tour)
+#
+# print(SA(nodes, initial_tour, Tmax, Tmin, lundy, outer, MCL))
+
+
 
 def simulate(i, save="eil51", batch="1"):
     data = pd.DataFrame()
 
     for j in range(i):
-        sim = SA(nodes, initial_tour, Temperature, cooling_cos, outer, MCL)
+        sim = SA(nodes, initial_tour, Tmax, Tmin, lundy, outer, MCL)
         print(sim)
         colname = str(round(sim[1])) + "-" + str(i)
         data[colname] = sim[0]
@@ -151,8 +167,8 @@ def simulate(i, save="eil51", batch="1"):
     data.to_csv(f'data/{save}.tsp-batch-{batch}.txt', sep='\t', index=False)
 
     return data
-
-print(simulate(10))
+#
+print(simulate(10, save="eil51", batch=3))
 
 
 

@@ -1,6 +1,7 @@
 import numpy as np
 import math
 
+
 # calculate distance between 2 nodes
 def get_distance(dictionary, city1, city2):
     x = dictionary[city1][0] - dictionary[city2][0]
@@ -16,8 +17,21 @@ def total_distance(tour, dictionary):
 
     return distance
 
-def basic_cooling(it, outer, temp):
-    return temp * 0.99
+def geometric(factor, temp):
+    return temp * factor
+
+def lundy(Tmax, Tmin, it, temp):
+    """
+    Lundy and Mees (L & M) Cooling method
+    :param Tmax: int. Maximum temperature
+    :param Tmin: int. Minimum temperature
+    :param it: int. Current iteration
+    :param temp: float. Current temperature
+    :return: float. New temperature
+    """
+    it = it + 2
+    beta = (Tmax - Tmin)/((it-1)*Tmax*Tmin)
+    return temp * (1/(1 + beta*temp))
 
 def cooling(it, outer, temp):
     """
