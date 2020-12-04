@@ -55,7 +55,7 @@ print(nodes)
 
 
 
-def SA(coordinates, tour, temp, coolingdown, mlength, start_node=True):
+def SA(coordinates, tour, temp, coolingdown, mlength, swap = False, start_node=True):
 
     if start_node == True:
         a, c = [tour[0]], [tour[0]]
@@ -80,11 +80,19 @@ def SA(coordinates, tour, temp, coolingdown, mlength, start_node=True):
 
         for j in range(mlength): # Parameter
 
-            # Exchange two coordinates and get a candidate solution solution
-            c1, c2 = np.random.randint(1, len(tour)-1, size = 2)
+            if swap == True:
+                # Exchange two coordinates and get a candidate solution solution
+                c1, c2 = np.random.randint(1, len(tour)-1, size = 2)
 
-            # Swap coordinates
-            tour[c1], tour[c2] = tour[c2], tour[c1]
+                # Swap coordinates
+                tour[c1], tour[c2] = tour[c2], tour[c1]
+            else:
+                randindex = np.random.randint(1,len(tour)-2)
+                randcity = np.random.randint(2,len(tour)-1)
+                c2_i = tour.index(randcity)
+                tour.remove(randcity)
+                # print(f'city {c2} removed out of index {c2_i}')
+                tour.insert(randindex, randcity)
 
             # get the new costs
             cost_n = total_distance(tour, coordinates)
@@ -100,8 +108,12 @@ def SA(coordinates, tour, temp, coolingdown, mlength, start_node=True):
                 if x < min(1, math.exp(-(cost_n-costs)/temp)):
                     costs = cost_n
                 else:
-                    # Swap back to prior solution
-                    tour[c1], tour[c2] = tour[c2], tour[c1]
+                    if swap == True:
+                        # Swap back to prior solution
+                        tour[c1], tour[c2] = tour[c2], tour[c1]
+                    else:
+                        tour.remove(randcity)
+                        tour.insert(c2_i, randcity)
 
     return tour, costs, temp
 
