@@ -9,6 +9,7 @@ f = open("TSP-configurations/eil51.tsp.txt", "r")
 # f = open("TSP-configurations/a280.tsp.txt", "r")
 # f = open("TSP-configurations/pcb442.tsp.txt", "r")
 
+
 network = f.readlines()[6:-1]
 
 # create dictionary to store coordinates
@@ -27,12 +28,6 @@ def get_distance(dictionary, city1, city2):
     return math.sqrt(x ** 2 + y ** 2)
 
 
-# def get_distance(dictionary, city1, city2):
-#     x = dictionary[city1][0][0] - dictionary[city2][0][0]
-#     y = dictionary[city1][0][1] - dictionary[city2][0][1]
-#     return math.sqrt(x ** 2 + y ** 2)
-
-
 # calculate the total distance
 def total_distance(tour, dictionary):
     distance = 0
@@ -48,11 +43,14 @@ for node in range(1, len(nodes) + 1):
     tour_ = [i for i in nodes.keys()]
     tour_.remove(node)
 
+
     for j in tour_:
+
         # because we want to keep 1 here
         if j != 1:
             t_dict[j] = get_distance(nodes, node, j)
 
+    # add sorted dict to values of nodes dictionary
     nodes[node].append(sorted(t_dict.items(), key=lambda x: x[1]))
 
 
@@ -79,19 +77,34 @@ def SA(coordinates, tour, temp, coolingdown, outer, mlength, knn, start_end=True
             print("Temperature of 0 reached")
             return tour, costs
 
-        knn = max(knn, round(i/outer * (len(tour)-3)))
+        knn = max(knn, round((i/outer * (len(tour)-3))))
         # print(f'new knn {knn}')
 
         for j in range(mlength):  # Parameter
 
             # Exchange two coordinates and get a candidate solution
+            # c1 represents an index
             c1 = np.random.randint(1, len(tour) - 2)
 
-            # get 1 of the nearest neighbors, which increase as the iterations decrease
-            c2 = coordinates[c1][2][np.random.randint(1, knn)][0]
+            # get 1 of the nearest neighbors
+            # knn increases as the iterations decrease (to get out of loc minima)
+            
+            # c2 represents an actual city if replaced
+            c2 = coordinates[c1][2][np.random.randint(0, knn)][0]
 
-            # Swap coordinates
-            tour[c1], tour[c2] = tour[c2], tour[c1]
+            # c2 represents an index if swapped, in that case use:
+            # c2 = coordinates[c1][2][np.random.randint(0, knn)][0] - 1
+
+
+            # Insert on c1 instead of swap
+            c2_i = tour.index(c2)
+            tour.remove(c2)
+            # print(f'city {c2} removed out of index {c2_i}')
+            tour.insert(c1, c2)
+            # print(f'city {c2} inserted in index {c1}')
+
+            # tour[c1], tour[c2] = tour[c2], tour[c1]
+
 
             # get the new costs
             cost_n = total_distance(tour, coordinates)
@@ -107,8 +120,12 @@ def SA(coordinates, tour, temp, coolingdown, outer, mlength, knn, start_end=True
                 if x < min(1, math.exp(-(cost_n - costs) / temp)):
                     costs = cost_n
                 else:
-                    # Swap back to prior solution
-                    tour[c1], tour[c2] = tour[c2], tour[c1]
+                    # Insert/Swap back to prior solution
+                    tour.remove(c2)
+                    # print(f'city {c2} removed out of index {c2_i}')
+                    tour.insert(c2_i, c2)
+                    # print(f'city {c2}inserted in index {c2_i}')
+                    # tour[c1], tour[c2] = tour[c2], tour[c1]
 
     return tour, costs, temp
 
@@ -124,14 +141,14 @@ def cooling(temp):
     :param temp: (float) temperature
     :return: (float) new temperature
     """
-    return temp - np.log(temp)
+    return temp * 0.99
 
 
-Temperature = 1000  # Parameter
+Temperature = 500  # Parameter
 outer = 1000
-MCL = 1000  # Markov Chain Length (inner loop)
+MCL = 500  # Markov Chain Length (inner loop)
 # Get node names
 initial_tour = [i for i in nodes.keys()]
 # print(initial_tour)
 #
-print(SA(nodes, initial_tour, Temperature, cooling, outer, MCL, 2))
+print(SA(nodes, initial_tour, Temperature, cooling, outer, MCL, 3))
