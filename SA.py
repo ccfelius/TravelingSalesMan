@@ -20,15 +20,15 @@ for node in network:
     nodes[node[0]] = node[1:]
 
 # calculate distance between 2 nodes
-def initial_distance(dictionary, city1, city2):
+def get_distance(dictionary, city1, city2):
     x = dictionary[city1][0] - dictionary[city2][0]
     y = dictionary[city1][1] - dictionary[city2][1]
     return math.sqrt(x**2 + y**2)
 
-def get_distance(dictionary, city1, city2):
-    x = dictionary[city1][0][0] - dictionary[city2][0][0]
-    y = dictionary[city1][0][1] - dictionary[city2][0][1]
-    return math.sqrt(x**2 + y**2)
+# def get_distance(dictionary, city1, city2):
+#     x = dictionary[city1][0][0] - dictionary[city2][0][0]
+#     y = dictionary[city1][0][1] - dictionary[city2][0][1]
+#     return math.sqrt(x**2 + y**2)
 
 # calculate the total distance
 def total_distance(tour, dictionary):
@@ -47,7 +47,7 @@ for node in range(1,len(nodes)+1):
     tour.remove(node)
 
     for j in tour:
-        t_dict[j] = initial_distance(nodes, node, j)
+        t_dict[j] = get_distance(nodes, node, j)
 
     nodes[node].append(sorted(t_dict.items(), key=lambda x: x[1]))
 
@@ -122,4 +122,4 @@ MCL = 500 # Markov Chain Length (inner loop)
 # Get node names
 initial_tour = [i for i in nodes.keys()]
 
-# print(SA(nodes, initial_tour, Temperature, cooling, MCL))
+print(SA(nodes, initial_tour, Temperature, cooling, MCL))
