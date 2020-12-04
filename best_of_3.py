@@ -135,26 +135,24 @@ def SA(coordinates, tour, temp, coolingdown, outer, mlength, method="bo3", start
 
 Temperature = 500  # Parameter
 MCL = 1000  # Markov Chain Length (inner loop)
-outer = 300
+outer = 250
 # Get node names
 initial_tour = [i for i in nodes.keys()]
 
-sim1 = SA(nodes, initial_tour, Temperature, cooling_cos, outer, MCL)
-sim2 = SA(nodes, initial_tour, Temperature, cooling_cos, outer, MCL)
-sim3 = SA(nodes, initial_tour, Temperature, cooling_cos, outer, MCL)
-sim4 = SA(nodes, initial_tour, Temperature, cooling_cos, outer, MCL)
-sim5 = SA(nodes, initial_tour, Temperature, cooling_cos, outer, MCL)
+def simulate(i, save="eil51", batch="1"):
+    data = pd.DataFrame()
 
-cols = [str(round(sim1[1])),str(round(sim2[1])),(sim3[1]),round(sim4[1]), round(sim5[1])]
-data = pd.DataFrame(columns=cols)
-data[str(round(sim1[1]))] = sim1[0]
-data[str(round(sim2[1]))] = sim2[0]
-data[str(round(sim3[1]))] = sim3[0]
-data[str(round(sim4[1]))] = sim4[0]
-data[str(round(sim5[1]))] = sim5[0]
+    for j in range(i):
+        sim = SA(nodes, initial_tour, Temperature, cooling_cos, outer, MCL)
+        print(sim)
+        colname = str(round(sim[1])) + "-" + str(i)
+        data[colname] = sim[0]
 
-data.to_csv(f'data/eil51.tsp-batch-1.txt', sep='\t', index=False)
+    data.to_csv(f'data/{save}.tsp-batch-{batch}.txt', sep='\t', index=False)
 
+    return data
+
+print(simulate(10))
 
 
 
