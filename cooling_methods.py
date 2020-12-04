@@ -20,6 +20,18 @@ def total_distance(tour, dictionary):
 def geometric(factor, temp):
     return temp * factor
 
+def lundy2(Tmax, Tmin, it, temp):
+    """
+    Lundy and Mees (L & M) Cooling method
+    :param Tmax: int. Maximum temperature
+    :param Tmin: int. Minimum temperature
+    :param it: int. Current iteration
+    :param temp: float. Current temperature
+    :return: float. New temperature
+    """
+    beta = 0.05
+    return temp * (1/(1 + beta*temp))
+
 def lundy(Tmax, Tmin, it, temp):
     """
     Lundy and Mees (L & M) Cooling method
