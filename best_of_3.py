@@ -1,12 +1,11 @@
-""" TSP SIMULATED ANNEALING """
-""" Hybrid Sampling and L&M Cooling Scheme"""
-
 # Imports
-import math
-import numpy as np
 import copy as cp
 import pandas as pd
 from TravelingSalesMan.cooling_methods import *
+from TravelingSalesMan.sampling_methods import *
+
+""" TSP SIMULATED ANNEALING """
+""" Hybrid Sampling and L&M Cooling Scheme"""
 
 # read data from file
 # uncomment the file you'd like to work with
@@ -26,21 +25,19 @@ for node in network:
     nodes[node[0]] = node[1:]
 
 
-# add nearest neighbors in order of nearest to most far
-for node in range(1, len(nodes) + 1):
-    t_dict = dict()
-    tour = [i for i in nodes.keys()]
-    tour.remove(node)
-
-    for j in tour:
-        t_dict[j] = get_distance(nodes, node, j)
-
-    nodes[node].append(sorted(t_dict.items(), key=lambda x: x[1]))
-
-print(nodes)
-
-
 def SA(coordinates, tour, Tmax, Tmin, coolingdown, outer, mlength, start_end=True):
+    """
+
+    :param coordinates: Dictionary. Dict with nodes as keys, coordinates as values
+    :param tour: List. initial path.
+    :param Tmax: Int. Maximum Temperature
+    :param Tmin: Int. Maximum Temperature
+    :param coolingdown: Func. Cooling down method
+    :param outer: Int. # Iterations in outer loop
+    :param mlength: Int. Markov Chain length
+    :param start_end: Bool. Indicate whether start and end node are fixed
+    :return: List, Float. Optimal path, Optimal path length respectively
+    """
 
     # initial temp is Tmax
     temp = Tmax
@@ -72,35 +69,19 @@ def SA(coordinates, tour, Tmax, Tmin, coolingdown, outer, mlength, start_end=Tru
 
         for j in range(mlength):  # Parameter
 
+            ## Hybrid Approach
             ## Take best value of swap, insert or invert
 
             ## SWAP
-            # Exchange two coordinates and get a candidate solution solution
-            c1, c2 = np.random.randint(1, len(tour) - 1, size=2)
-            # Swap coordinates, make deepcopy of list
-            stour = cp.deepcopy(tour)
-            stour[c1], stour[c2] = stour[c2], stour[c1]
+            stour = swap(tour)
             scosts = total_distance(stour, coordinates)
 
-            # inserting
-            randindex = np.random.randint(1, len(tour) - 2)
-            randcity = np.random.randint(2, len(tour) - 1)
-            instour = cp.deepcopy(tour)
-            instour.remove(randcity)
-            instour.insert(randindex, randcity)
+            # Insert
+            instour = insert(tour)
             inscosts = total_distance(instour, coordinates)
 
-            # invert
-            c1, c2 = np.random.randint(1, len(tour) - 1, size=2)
-            if c2 < c1:
-                a = c2
-                b = c1
-            else:
-                a = c1
-                b = c2
-
-            itour = cp.deepcopy(tour)
-            itour = itour[:a] + itour[b:a - 1:-1] + itour[b + 1:]
+            # Invert
+            itour = invert(tour)
             icosts = total_distance(itour, coordinates)
 
             # put all calculated costs in list
@@ -138,37 +119,49 @@ def SA(coordinates, tour, Tmax, Tmin, coolingdown, outer, mlength, start_end=Tru
             total_costs = costs
             shortest_route = tour
 
-    return shortest_route, total_costs, temp
+    return shortest_route, total_costs
 
 
 # Most optimal parameters found so far for eil51.tsp
 Tmax = 400  # Parameter
 Tmin = 5
-outer = 500
+outer = 1000
 MCL = 1000  # Markov Chain Length (inner loop)
+
+# random params, test
+# Tmax = 100  # Parameter
+# Tmin = 1
+# outer = 1000
+# MCL = 1000  # Markov Chain Length (inner loop)
+
+# Most optimal parameters found so far for a280.tsp
+# Tmax = 750  # Parameter
+# Tmin = 1
+# outer = 250
+# MCL = 500  # Markov Chain Length (inner loop)
 
 # Get node names
 initial_tour = [i for i in nodes.keys()]
 # print(initial_tour)
-#
-# print(SA(nodes, initial_tour, Tmax, Tmin, lundy, outer, MCL))
-
+# #
+print(SA(nodes, initial_tour, Tmax, Tmin, lundy, outer, MCL))
 
 
 def simulate(i, save="eil51", batch="1"):
     data = pd.DataFrame()
 
     for j in range(i):
+        print(f"Simulation {j+1}")
         sim = SA(nodes, initial_tour, Tmax, Tmin, lundy, outer, MCL)
         print(sim)
-        colname = str(round(sim[1])) + "-" + str(i)
+        colname = str(round(sim[1], 2)) + "-" + str(j)
         data[colname] = sim[0]
 
     data.to_csv(f'data/{save}.tsp-batch-{batch}.txt', sep='\t', index=False)
 
     return data
-#
-print(simulate(10, save="eil51", batch=3))
+
+# print(simulate(20, save="eil51.tsp", batch=21))
 
 
 
