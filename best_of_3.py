@@ -3,6 +3,7 @@ import copy as cp
 import pandas as pd
 from TravelingSalesMan.cooling_methods import *
 from TravelingSalesMan.sampling_methods import *
+import matplotlib.pyplot as plt
 
 """ TSP SIMULATED ANNEALING """
 """ Hybrid Sampling and L&M Cooling Scheme"""
@@ -10,8 +11,8 @@ from TravelingSalesMan.sampling_methods import *
 # read data from file
 # uncomment the file you'd like to work with
 
-f = open("TSP-configurations/eil51.tsp.txt", "r")
-# f = open("TSP-configurations/a280.tsp.txt", "r")
+# f = open("TSP-configurations/eil51.tsp.txt", "r")
+f = open("TSP-configurations/a280.tsp.txt", "r")
 # f = open("TSP-configurations/pcb442.tsp.txt", "r")
 
 network = f.readlines()[6:-1]
@@ -41,6 +42,7 @@ def SA(coordinates, tour, Tmax, Tmin, coolingdown, outer, mlength, start_end=Tru
 
     # initial temp is Tmax
     temp = Tmax
+    templist = []
 
     # set begin and end node (city)
     if start_end == True:
@@ -60,12 +62,10 @@ def SA(coordinates, tour, Tmax, Tmin, coolingdown, outer, mlength, start_end=Tru
 
     for i in range(outer):  # Parameter
 
-        print(i, 'cost=', costs)
+        print(i, 'cost=', costs, temp)
 
-        # if temp <= Tmin:
-        #     print("Minimum temperature reached")
-        #     return tour, costs
         temp = coolingdown(Tmax, Tmin, i, temp)
+        templist.append(temp)
 
         for j in range(mlength):  # Parameter
 
@@ -119,14 +119,14 @@ def SA(coordinates, tour, Tmax, Tmin, coolingdown, outer, mlength, start_end=Tru
             total_costs = costs
             shortest_route = tour
 
-    return shortest_route, total_costs
+    return shortest_route, total_costs, templist
 
 
 # Most optimal parameters found so far for eil51.tsp
-Tmax = 400  # Parameter
-Tmin = 5
-outer = 1000
-MCL = 1000  # Markov Chain Length (inner loop)
+# Tmax = 400  # Parameter
+# Tmin = 5
+# outer = 1000
+# MCL = 1000  # Markov Chain Length (inner loop)
 
 # random params, test
 # Tmax = 100  # Parameter
@@ -135,33 +135,39 @@ MCL = 1000  # Markov Chain Length (inner loop)
 # MCL = 1000  # Markov Chain Length (inner loop)
 
 # Most optimal parameters found so far for a280.tsp
-# Tmax = 750  # Parameter
-# Tmin = 1
-# outer = 250
-# MCL = 500  # Markov Chain Length (inner loop)
+Tmax = 400 # Parameter #450
+Tmin = 1 # 1
+outer = 1000
+MCL = 500  # Markov Chain Length (inner loop)
 
 # Get node names
 initial_tour = [i for i in nodes.keys()]
 # print(initial_tour)
 # #
-print(SA(nodes, initial_tour, Tmax, Tmin, lundy, outer, MCL))
+# ans = SA(nodes, initial_tour, Tmax, Tmin, lundy_var, outer, MCL)
 
 
-def simulate(i, save="eil51", batch="1"):
+def simulate(i, save="a280", batch="1"):
     data = pd.DataFrame()
 
     for j in range(i):
         print(f"Simulation {j+1}")
-        sim = SA(nodes, initial_tour, Tmax, Tmin, lundy, outer, MCL)
-        print(sim)
+        sim = SA(nodes, initial_tour, Tmax, Tmin, lundy_var, outer, MCL)
+        print(sim[0], sim[1])
+        tlist = sim[2]
         colname = str(round(sim[1], 2)) + "-" + str(j)
+        plt.plot([i for i in range(outer)], tlist, color='deeppink')
+        plt.title("Temperature decreasing per iteration")
+        plt.xlabel("Iteration")
+        plt.ylabel("Temperature")
+        plt.savefig(f"plots/lundy_plot-1-{j}")
         data[colname] = sim[0]
 
     data.to_csv(f'data/{save}.tsp-batch-{batch}.txt', sep='\t', index=False)
 
     return data
 
-# print(simulate(20, save="eil51.tsp", batch=21))
+print(simulate(10, save="a280", batch=1400))
 
 
 
