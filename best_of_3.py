@@ -1,11 +1,11 @@
 # Imports
 import copy as cp
 import pandas as pd
-from TravelingSalesMan.cooling_methods import *
-from TravelingSalesMan.sampling_methods import *
+from cooling_methods import *
+from sampling_methods import *
 import matplotlib.pyplot as plt
 
-# begin met best guess (2600.4?) And start with initial guess, at lower temperature etc. Maybe also do iggy's thing as it seems to perform good.
+# begin met best guess (2600.4?) And start with initial guess, at lower temperature etc?
 
 """ TSP SIMULATED ANNEALING """
 """ Hybrid Sampling and L&M Cooling Scheme"""
@@ -21,7 +21,7 @@ network = f.readlines()[6:-1]
 
 # create dictionary to store coordinates
 nodes = dict()
-
+print("cooling!")
 # split data and put in dict
 for node in network:
     node = list(map(float, (list(filter(None, node.rstrip().rsplit(' '))))))
@@ -72,12 +72,22 @@ def SA(coordinates, tour, Tmax, Tmin, coolingdown, outer, mlength, best_guess=Fa
     for i in range(outer):  # Parameter
 
         print(i, 'cost=', costs, temp)
+        if temp <= 0:
+            break
 
-        temp = coolingdown(Tmax, Tmin, i, temp)
+        # uncomment if running cooldown method geometric:
+        # temp = coolingdown(.9, temp)
+
+        # uncomment if running cooldown method cooling:
+        temp = coolingdown(i, temp)
+
+
+        # uncomment if running cooldown method lundy_var:
+        # temp = coolingdown(Tmax, Tmin, i, temp)
+
         templist.append(temp)
 
         for j in range(mlength):  # Parameter
-
             ## Hybrid Approach
             ## Take best value of swap, insert or invert
 
@@ -150,6 +160,7 @@ outer = 1000
 MCL = 1000  # Markov Chain Length (inner loop)
 
 # Get node names
+
 bestguess = pd.read_csv("data/a280.tsp-batch-mkc10k2.txt")
 # print(good['2600.4-0'])
 initial_tour = list(bestguess['2600.4-0'])
@@ -158,28 +169,54 @@ initial_tour = list(bestguess['2600.4-0'])
 # # #
 # ans = SA(nodes, initial_tour, Tmax, Tmin, lundy_var(), outer, MCL)
 
+initial_tour = [i for i in nodes.keys()]
+# print(initial_tour)
+# #
+# ans = SA(nodes, initial_tour, Tmax, Tmin, lundy_var, outer, MCL)
+
+initial_tour = [i for i in nodes.keys()]
+# #
+# ans = SA(nodes, initial_tour, Tmax, Tmin, lundy_var, outer, MCL)
+
 
 def simulate(i, save="a280", batch="1"):
     data = pd.DataFrame()
 
     for j in range(i):
         print(f"Simulation {j+1}")
+
         sim = SA(nodes, initial_tour, Tmax, Tmin, lundy_var, outer, MCL, best_guess=True)
+        sim = SA(nodes, initial_tour, Tmax, Tmin, lundy_var, outer, MCL)
+
+        # uncomment method used 
+        #sim = SA(nodes, initial_tour, Tmax, Tmin, geometric, outer, MCL)
+        sim = SA(nodes, initial_tour, Tmax, Tmin, cooling, outer, MCL)
+        # sim = SA(nodes, initial_tour, Tmax, Tmin, lundy_var, outer, MCL)
+        
+
         print(sim[0], sim[1])
         tlist = sim[2]
         colname = str(round(sim[1], 2)) + "-" + str(j)
-        plt.plot([i for i in range(outer)], tlist, color='deeppink')
-        plt.title("Temperature decreasing per iteration")
-        plt.xlabel("Iteration")
-        plt.ylabel("Temperature")
-        plt.savefig(f"plots/lundy_plot-1-{j}")
+        # plt.plot([i for i in range(outer)], tlist, color='deeppink')
+        # plt.title("Temperature decreasing per iteration")
+        # plt.xlabel("Iteration")
+        # plt.ylabel("Temperature")
+        # plt.savefig(f"plots/cooling-plot-test-{j}")
         data[colname] = sim[0]
 
     data.to_csv(f'data/{save}.tsp-batch-{batch}.txt', sep='\t', index=False)
 
     return data
+
 #
 print(simulate(1, save="a280", batch="bestguess"))
+
+
+print(simulate(10, save="a280", batch=1400))
+
+
+print(simulate(10, save="a280_cooling_test", batch=11))
+
 
 
 
