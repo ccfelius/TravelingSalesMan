@@ -5,6 +5,8 @@ from TravelingSalesMan.cooling_methods import *
 from TravelingSalesMan.sampling_methods import *
 import matplotlib.pyplot as plt
 
+# begin met best guess (2600.4?) And start with initial guess, at lower temperature etc. Maybe also do iggy's thing as it seems to perform good.
+
 """ TSP SIMULATED ANNEALING """
 """ Hybrid Sampling and L&M Cooling Scheme"""
 
@@ -26,7 +28,11 @@ for node in network:
     nodes[node[0]] = node[1:]
 
 
-def SA(coordinates, tour, Tmax, Tmin, coolingdown, outer, mlength, start_end=True):
+good = pd.read_csv("data/a280.tsp-batch-mkc10k2.txt")
+print(good['2600.4-0'])
+
+
+def SA(coordinates, tour, Tmax, Tmin, coolingdown, outer, mlength, best_guess=False, start_end=True):
     """
 
     :param coordinates: Dictionary. Dict with nodes as keys, coordinates as values
@@ -36,6 +42,7 @@ def SA(coordinates, tour, Tmax, Tmin, coolingdown, outer, mlength, start_end=Tru
     :param coolingdown: Func. Cooling down method
     :param outer: Int. # Iterations in outer loop
     :param mlength: Int. Markov Chain length
+    :param best_guess: List. Best guess as start.
     :param start_end: Bool. Indicate whether start and end node are fixed
     :return: List, Float. Optimal path, Optimal path length respectively
     """
@@ -45,13 +52,15 @@ def SA(coordinates, tour, Tmax, Tmin, coolingdown, outer, mlength, start_end=Tru
     templist = []
 
     # set begin and end node (city)
-    if start_end == True:
-        a, c = [tour[0]], [tour[0]]
-        b = tour[1:]
-        np.random.shuffle(b)
-        tour = a + b + c
-    else:
-        np.random.shuffle(tour)
+
+    if not best_guess:
+        if start_end == True:
+            a, c = [tour[0]], [tour[0]]
+            b = tour[1:]
+            np.random.shuffle(b)
+            tour = a + b + c
+        else:
+            np.random.shuffle(tour)
 
     print(f'\nInitial solution: {tour}\n')
 
@@ -135,16 +144,19 @@ def SA(coordinates, tour, Tmax, Tmin, coolingdown, outer, mlength, start_end=Tru
 # MCL = 1000  # Markov Chain Length (inner loop)
 
 # Most optimal parameters found so far for a280.tsp
-Tmax = 400 # Parameter #450
+Tmax = 1.5 # Parameter #1000
 Tmin = 1 # 1
 outer = 1000
-MCL = 500  # Markov Chain Length (inner loop)
+MCL = 1000  # Markov Chain Length (inner loop)
 
 # Get node names
-initial_tour = [i for i in nodes.keys()]
+bestguess = pd.read_csv("data/a280.tsp-batch-mkc10k2.txt")
+# print(good['2600.4-0'])
+initial_tour = list(bestguess['2600.4-0'])
+# initial_tour = [i for i in nodes.keys()]
 # print(initial_tour)
-# #
-# ans = SA(nodes, initial_tour, Tmax, Tmin, lundy_var, outer, MCL)
+# # #
+# ans = SA(nodes, initial_tour, Tmax, Tmin, lundy_var(), outer, MCL)
 
 
 def simulate(i, save="a280", batch="1"):
@@ -152,7 +164,7 @@ def simulate(i, save="a280", batch="1"):
 
     for j in range(i):
         print(f"Simulation {j+1}")
-        sim = SA(nodes, initial_tour, Tmax, Tmin, lundy_var, outer, MCL)
+        sim = SA(nodes, initial_tour, Tmax, Tmin, lundy_var, outer, MCL, best_guess=True)
         print(sim[0], sim[1])
         tlist = sim[2]
         colname = str(round(sim[1], 2)) + "-" + str(j)
@@ -166,8 +178,8 @@ def simulate(i, save="a280", batch="1"):
     data.to_csv(f'data/{save}.tsp-batch-{batch}.txt', sep='\t', index=False)
 
     return data
-
-print(simulate(10, save="a280", batch=1400))
+#
+print(simulate(1, save="a280", batch="bestguess"))
 
 
 

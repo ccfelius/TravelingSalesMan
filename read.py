@@ -6,8 +6,9 @@ import numpy as np
 # read data from file
 
 # file to experiment with
-f = open("TSP-configurations/a280.tsp.txt", "r")
-f2 = open("TSP-configurations/a280.opt.tour.txt", "r")
+# f = open("TSP-configurations/a280.tsp.txt", "r")
+# f2 = open("TSP-configurations/a280.opt.tour.txt", "r")
+
 # f = open("TSP-configurations/pcb442.tsp.txt", "r")
 
 # file to perform tests on
@@ -50,7 +51,16 @@ for node in network2:
     node = list(map(int, (list(filter(None, node.rstrip().rsplit(' '))))))
     nodes2.append(node[0])
 
-nodes2 = nodes2[:-1]
+nodes2[-1] = 1
+# nodes2 = nodes2[:-1]
 # print(nodes2[:-1])
 print(total_distance(nodes2, nodes))
+print(nodes2)
 
+# i1 = nodes2.index(19)
+# i2 = nodes2.index(40)
+#
+# nodes2[i1], nodes2[i2] = nodes2[i2], nodes2[i1]
+#
+# print(total_distance(nodes2, nodes))
+# print(nodes2)

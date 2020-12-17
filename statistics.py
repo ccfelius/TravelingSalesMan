@@ -20,7 +20,11 @@ def conf_int(mean, var, n, p=0.95):
     plus_lambda = mean + alambda
     return f"Confidence interval: [{min_lambda:.4f} < X < {plus_lambda:.4f}] with p = {p}"
 
-batchlist = ["1100", "1400", "11000", "12000", "-995", "-1749", "-1999"]
+batchlist = ["1100", "1400", "11000", "12000", "-1749", "-1999"]
+mcklist = ["mkc100-2", "11000", "mkc1000", "mkc10000"]
+
+# 1999 is 500 temp
+# 1749 is 250 temp
 
 for batch in batchlist:
     file = pd.read_csv(f'data/a280.tsp-batch-{batch}.txt', sep='\t')
@@ -31,3 +35,4 @@ for batch in batchlist:
     print(f'Batch: a280.tsp-batch-{batch}')
     print(f'Average: {mean}, Stdev: {np.std(m)}')
     print(conf_int(mean, var, n))
+    print()
