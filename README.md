@@ -1,9 +1,11 @@
 ## Traveling Salesman Problem
 
-Amber den Hollander (), Lotte Felius (12368032). Course: Stochastic Simulation @ University of Amsterdam.<br><br>
+Amber den Hollander (10910441), Lotte Felius (12368032). Course: Stochastic Simulation @ University of Amsterdam.<br><br>
 #### Required Packages:
 - numpy<br>
-- scipy<br>
+- scipy.stats<br>
+- math<br>
+- pandas<br>
 - matplotlib
 
 #### Directories
