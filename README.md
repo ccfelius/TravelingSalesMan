@@ -1,12 +1,17 @@
 ## Traveling Salesman Problem
 
-Amber den Hollander (10910441), Lotte Felius (12368032). Course: Stochastic Simulation @ University of Amsterdam.<br><br>
+Amber den Hollander (10910441), Lotte Felius (12368032). <br>
+Course: Stochastic Simulation @ University of Amsterdam.<br><br>
+
 #### Required Packages:
 - numpy<br>
 - scipy.stats<br>
 - math<br>
 - pandas<br>
 - matplotlib
+
+#### Instructions:
+Clone everything on your local machine. Make sure all required packages are installed and everything is in the right place. If that is the case, you can directly run best_of_3.py if you want to simulate.<br>
 
 #### Directories
 - <b>TSP-configurations and TSP</b><br>
