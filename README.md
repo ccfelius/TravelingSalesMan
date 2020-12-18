@@ -8,6 +8,7 @@ Course: Stochastic Simulation @ University of Amsterdam.<br><br>
 - scipy.stats<br>
 - math<br>
 - pandas<br>
+- copy <br>
 - matplotlib
 
 #### Instructions:
@@ -23,7 +24,7 @@ In this folder all plots for the assignments are stated<br>
 
 #### Python files
 - <b> best_of_3.py</b><br>
-This file is used for the simulations, it makes use of hybrid sampling and is therefore called 'best of 3'. If you want to run simulations you should run this file.<br>
+This file is used for the simulations, it makes use of hybrid sampling and is therefore called 'best of 3'. If you want to run simulations you should run this file. The initial settings of this file are not corresponding to the settings used to get the simulations from the report, but are set in order to find a local or global minimum as it has a lower temperature and not a random path at the beginning, but it contains a 'best guess'.<br>
 - <b> cooling_methods.py</b><br>
 In this file different cooling methods are implemented. This is file is required for running best_of_3.py <br>
 - <b> sampling_methods.py</b><br>
