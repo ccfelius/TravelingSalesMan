@@ -3,10 +3,8 @@ import pandas as pd
 from cooling_methods import *
 from sampling_methods import *
 
-# begin met best guess (2600.4?) And start with initial guess, at lower temperature etc?
-
 """ TSP SIMULATED ANNEALING """
-""" Hybrid Sampling and L&M Cooling Scheme"""
+""" Hybrid Sampling and L&M variation Cooling Scheme"""
 
 # read data from file
 # uncomment the file you'd like to work with
@@ -19,7 +17,6 @@ network = f.readlines()[6:-1]
 
 # create dictionary to store coordinates
 nodes = dict()
-print("cooling!")
 # split data and put in dict
 for node in network:
     node = list(map(float, (list(filter(None, node.rstrip().rsplit(' '))))))
@@ -145,36 +142,25 @@ def SA(coordinates, tour, Tmax, Tmin, coolingdown, outer, mlength, best_guess=Fa
 # outer = 1000
 # MCL = 1000  # Markov Chain Length (inner loop)
 
-# random params, test
-# Tmax = 100  # Parameter
+# Most optimal parameters found so far for a280.tsp
+# Tmax = 1000  # Parameter
 # Tmin = 1
 # outer = 1000
 # MCL = 1000  # Markov Chain Length (inner loop)
 
-# Most optimal parameters found so far for a280.tsp
+# Most optimal parameters for a best guess initial path
 Tmax = 10 # Parameter #1000
 Tmin = 1 # 1
 outer = 1000
 MCL = 1000  # Markov Chain Length (inner loop)
 
-# Get node names
+
 
 bestguess = pd.read_csv("data/a280.tsp-batch-mkc10k2.txt")
-# print(good['2600.4-0'])
 initial_tour = list(bestguess['2600.4-0'])
-# initial_tour = [i for i in nodes.keys()]
-# print(initial_tour)
-# # #
-# ans = SA(nodes, initial_tour, Tmax, Tmin, lundy_var(), outer, MCL)
 
+# if you want to start with random path, uncomment
 # initial_tour = [i for i in nodes.keys()]
-# print(initial_tour)
-# #
-# ans = SA(nodes, initial_tour, Tmax, Tmin, lundy_var, outer, MCL)
-
-# initial_tour = [i for i in nodes.keys()]
-# #
-# ans = SA(nodes, initial_tour, Tmax, Tmin, lundy_var, outer, MCL)
 
 
 def simulate(i, save="a280", batch="1"):
