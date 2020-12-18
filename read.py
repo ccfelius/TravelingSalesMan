@@ -7,12 +7,12 @@ import numpy as np
 
 # file to experiment with
 # f = open("TSP-configurations/a280.tsp.txt", "r")
-# f2 = open("TSP-configurations/a280.opt.tour.txt", "r")
+f2 = open("TSP-configurations/a280.opt.tour.txt", "r")
 
 # f = open("TSP-configurations/pcb442.tsp.txt", "r")
 
 # file to perform tests on
-# f = open("TSP-configurations/a280.tsp.txt", "r")
+f = open("TSP-configurations/a280.tsp.txt", "r")
 
 network = f.readlines()[6:-1]
 

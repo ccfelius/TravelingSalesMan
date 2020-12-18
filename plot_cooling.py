@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-from TravelingSalesMan.cooling_methods import *
+from cooling_methods import *
 import numpy as np
 
 i = np.arange(0, 2000, 1)
