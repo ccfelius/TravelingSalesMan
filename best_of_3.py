@@ -1,9 +1,7 @@
 # Imports
-import copy as cp
 import pandas as pd
 from cooling_methods import *
 from sampling_methods import *
-import matplotlib.pyplot as plt
 
 # begin met best guess (2600.4?) And start with initial guess, at lower temperature etc?
 
@@ -79,7 +77,7 @@ def SA(coordinates, tour, Tmax, Tmin, coolingdown, outer, mlength, best_guess=Fa
         # temp = coolingdown(.9, temp)
 
         # uncomment if running cooldown method cooling:
-        temp = coolingdown(i, temp)
+        temp = coolingdown(Tmax, Tmin, i, temp)
 
 
         # uncomment if running cooldown method lundy_var:
@@ -154,7 +152,7 @@ def SA(coordinates, tour, Tmax, Tmin, coolingdown, outer, mlength, best_guess=Fa
 # MCL = 1000  # Markov Chain Length (inner loop)
 
 # Most optimal parameters found so far for a280.tsp
-Tmax = 1.5 # Parameter #1000
+Tmax = 10 # Parameter #1000
 Tmin = 1 # 1
 outer = 1000
 MCL = 1000  # Markov Chain Length (inner loop)
@@ -169,12 +167,12 @@ initial_tour = list(bestguess['2600.4-0'])
 # # #
 # ans = SA(nodes, initial_tour, Tmax, Tmin, lundy_var(), outer, MCL)
 
-initial_tour = [i for i in nodes.keys()]
+# initial_tour = [i for i in nodes.keys()]
 # print(initial_tour)
 # #
 # ans = SA(nodes, initial_tour, Tmax, Tmin, lundy_var, outer, MCL)
 
-initial_tour = [i for i in nodes.keys()]
+# initial_tour = [i for i in nodes.keys()]
 # #
 # ans = SA(nodes, initial_tour, Tmax, Tmin, lundy_var, outer, MCL)
 
@@ -186,12 +184,12 @@ def simulate(i, save="a280", batch="1"):
         print(f"Simulation {j+1}")
 
         sim = SA(nodes, initial_tour, Tmax, Tmin, lundy_var, outer, MCL, best_guess=True)
-        sim = SA(nodes, initial_tour, Tmax, Tmin, lundy_var, outer, MCL)
+        # sim = SA(nodes, initial_tour, Tmax, Tmin, lundy_var, outer, MCL)
 
         # uncomment method used 
         #sim = SA(nodes, initial_tour, Tmax, Tmin, geometric, outer, MCL)
-        sim = SA(nodes, initial_tour, Tmax, Tmin, cooling, outer, MCL)
-        # sim = SA(nodes, initial_tour, Tmax, Tmin, lundy_var, outer, MCL)
+        # sim = SA(nodes, initial_tour, Tmax, Tmin, cooling, outer, MCL)
+        # # sim = SA(nodes, initial_tour, Tmax, Tmin, lundy_var, outer, MCL)
         
 
         print(sim[0], sim[1])
