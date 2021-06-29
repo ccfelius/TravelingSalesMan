@@ -1,8 +1,5 @@
 ## Traveling Salesman Problem
 
-Amber den Hollander (10910441), Lotte Felius (12368032). <br>
-Course: Stochastic Simulation @ University of Amsterdam.<br><br>
-
 ### License:
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
